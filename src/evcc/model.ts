@@ -1,0 +1,84 @@
+/** Data model of the site and loadpoints reported by evcc. */
+
+export type ChargeMode = "off" | "pv" | "minpv" | "now";
+
+/** Charge modes in the order the keys cycle through them. */
+export const MODES: ChargeMode[] = ["off", "pv", "minpv", "now"];
+
+export function isChargeMode(value: unknown): value is ChargeMode {
+  return typeof value === "string" && (MODES as string[]).includes(value);
+}
+
+export function nextMode(mode: ChargeMode | undefined): ChargeMode {
+  const index = MODES.indexOf(mode ?? "off");
+  return MODES[(index + 1) % MODES.length];
+}
+
+export type Site = {
+  title?: string;
+  /** PV production in W. */
+  pvPower?: number;
+  /** Grid power in W: positive = import, negative = export. */
+  gridPower?: number;
+  /** Home consumption in W. */
+  homePower?: number;
+  /** Battery power in W: positive = discharging, negative = charging. */
+  batteryPower?: number;
+  /** Battery state of charge in %. */
+  batterySoc?: number;
+};
+
+export type Loadpoint = {
+  /** 0-based position in the loadpoints array (used in WebSocket keys and settings). */
+  index: number;
+  /** 1-based id as used by the REST endpoints /api/loadpoints/{id}/... */
+  id: number;
+  title: string;
+  mode?: ChargeMode;
+  /** Current charge power in W. */
+  chargePower?: number;
+  charging: boolean;
+  connected: boolean;
+  enabled: boolean;
+  vehicleName?: string;
+  vehicleTitle?: string;
+  /** Vehicle state of charge in %. */
+  vehicleSoc?: number;
+  /** Minimum charge current in A. */
+  minCurrent?: number;
+  /** Maximum charge current in A. */
+  maxCurrent?: number;
+  /** Charge limit in % of the vehicle SoC (0 = no limit). */
+  limitSoc?: number;
+  /** Estimated remaining charge time in seconds. */
+  chargeRemainingDuration?: number;
+  /** Energy charged in this session in Wh. */
+  chargedEnergy?: number;
+};
+
+export type EvccState = {
+  site: Site;
+  loadpoints: Loadpoint[];
+};
+
+/** Limits of the values the dial adjusts. */
+export const MIN_CURRENT_RANGE = { min: 6, max: 16, step: 1 } as const;
+export const LIMIT_SOC_RANGE = { min: 0, max: 100, step: 5 } as const;
+
+function stepValue(value: number | undefined, ticks: number, range: { min: number; max: number; step: number }, fallback: number): number {
+  const current = value ?? fallback;
+  // Snap to the grid first so that e.g. a min current of 6.5 A becomes 7 A on the next tick.
+  const snapped = ticks > 0 ? Math.floor(current / range.step) * range.step : Math.ceil(current / range.step) * range.step;
+  const next = snapped + Math.sign(ticks) * Math.min(Math.abs(ticks), 20) * range.step;
+  return Math.min(range.max, Math.max(range.min, next));
+}
+
+/** Min current after turning the dial by `ticks` (positive = clockwise). */
+export function stepMinCurrent(amps: number | undefined, ticks: number): number {
+  return stepValue(amps, ticks, MIN_CURRENT_RANGE, MIN_CURRENT_RANGE.min);
+}
+
+/** Limit SoC after turning the dial by `ticks`, in 5 % steps. */
+export function stepLimitSoc(soc: number | undefined, ticks: number): number {
+  return stepValue(soc, ticks, LIMIT_SOC_RANGE, LIMIT_SOC_RANGE.max);
+}

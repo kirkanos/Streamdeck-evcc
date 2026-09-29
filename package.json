@@ -1,0 +1,44 @@
+{
+  "name": "streamdeck-evcc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "evcc Charge: Charging state and PV situation from evcc, with charge mode switching.",
+  "streamdeck": {
+    "id": "com.kirkanos.evcc",
+    "name": "evcc Charge"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:dev": "node scripts/build.mjs --dev",
+    "watch:dev": "node scripts/build.mjs --dev --watch",
+    "link:dev": "node scripts/build.mjs --dev && streamdeck link dist/com.kirkanos.evcc-dev.sdPlugin",
+    "restart:dev": "streamdeck restart com.kirkanos.evcc-dev",
+    "validate": "node scripts/build.mjs && streamdeck validate dist/com.kirkanos.evcc.sdPlugin",
+    "pack": "node scripts/build.mjs && streamdeck pack dist/com.kirkanos.evcc.sdPlugin --output Release --force",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "engines": {
+    "node": ">=20.5.1"
+  },
+  "dependencies": {
+    "@elgato/streamdeck": "^3.0.1"
+  },
+  "devDependencies": {
+    "@elgato/cli": "^1.10.1",
+    "@resvg/resvg-js": "^2.6.2",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-replace": "^6.0.2",
+    "@rollup/plugin-terser": "^1.0.0",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@tsconfig/node20": "^20.1.6",
+    "@types/node": "^24.1.0",
+    "rollup": "^4.63.5",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.2"
+  }
+}

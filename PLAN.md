@@ -1,6 +1,6 @@
 # Streamdeck-evcc
 
-Stream Deck plugin `com.kirkanos.evcc`. Status: plan only, no code yet.
+Stream Deck plugin `com.kirkanos.evcc`. Status: M1 to M3 implemented (keys, WebSocket updates, mode switching, dial); M4 (release) open.
 
 ## Goal
 

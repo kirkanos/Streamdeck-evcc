@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dial settings</title>
+    <script src="sdpi-components.js"></script>
+    <script src="connection.js"></script>
+    <link rel="stylesheet" href="pi.css" />
+  </head>
+  <body>
+    <div id="evcc-connection"></div>
+
+    <div class="requires-connection" hidden>
+      <sdpi-item label="Loadpoint">
+        <sdpi-select setting="loadpoint" datasource="getLoadpoints" hot-reload placeholder="Select a loadpoint" loading="Loading loadpoints…"></sdpi-select>
+      </sdpi-item>
+
+      <sdpi-item label="Turning sets">
+        <sdpi-select setting="function" default="minCurrent">
+          <option value="minCurrent">Minimum charge current (6 to 16 A)</option>
+          <option value="limitSoc">Charge limit (SoC, 5 % steps)</option>
+        </sdpi-select>
+      </sdpi-item>
+
+      <p class="hint">
+        Turn the dial to adjust the value; it is sent to evcc once the dial rests. Push the dial or tap the touch strip
+        to switch to the next charge mode.
+      </p>
+    </div>
+  </body>
+</html>

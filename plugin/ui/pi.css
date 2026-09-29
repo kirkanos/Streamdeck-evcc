@@ -1,0 +1,53 @@
+/* Additions to the sdpi-components look for the connection section. */
+
+.status {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 4px 0 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #3a3a3a;
+}
+
+.status::before {
+  content: "";
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+
+.status.connected::before { background: #22c55e; }
+.status.connecting::before { background: #f59e0b; }
+.status.error::before { background: #ef4444; }
+
+.status strong { display: block; color: #fff; }
+
+.status span {
+  display: block;
+  margin-top: 2px;
+  color: #aaa;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.message {
+  margin: 0 0 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #3a3a3a;
+  color: #ddd;
+}
+
+.message.success { background: #14532d; color: #bbf7d0; }
+.message.error { background: #7f1d1d; color: #fecaca; }
+
+.hint {
+  margin: 2px 0 10px;
+  color: #999;
+  font-size: 11px;
+  line-height: 1.4;
+}

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "UUID": "com.kirkanos.evcc",
+  "Name": "evcc Charge",
+  "Version": "0.0.0.0",
+  "Author": "Andreas Hacker",
+  "Description": "Charging state and PV situation from evcc on your keys and dials, with charge mode switching. Unofficial plugin, not affiliated with the evcc project.",
+  "URL": "https://github.com/kirkanos/Streamdeck-evcc",
+  "Icon": "images/icon",
+  "Category": "evcc Charge",
+  "CategoryIcon": "images/category",
+  "CodePath": "bin/plugin.js",
+  "SDKVersion": 3,
+  "Nodejs": {
+    "Version": "24",
+    "Debug": "enabled"
+  },
+  "Software": {
+    "MinimumVersion": "7.1"
+  },
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "12"
+    },
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Actions": [
+    {
+      "UUID": "com.kirkanos.evcc.loadpoint",
+      "Name": "Loadpoint",
+      "Icon": "images/actions/loadpoint",
+      "Tooltip": "Charge mode, charge power and vehicle SoC of one loadpoint; press to switch the charge mode, hold to switch charging off",
+      "PropertyInspectorPath": "ui/loadpoint.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false,
+      "States": [
+        {
+          "Image": "images/key",
+          "TitleAlignment": "top",
+          "FontSize": 10
+        }
+      ]
+    },
+    {
+      "UUID": "com.kirkanos.evcc.site",
+      "Name": "Site",
+      "Icon": "images/actions/site",
+      "Tooltip": "PV production, grid import / export, battery SoC or home consumption; press to switch the value",
+      "PropertyInspectorPath": "ui/site.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false,
+      "States": [
+        {
+          "Image": "images/key",
+          "TitleAlignment": "top",
+          "FontSize": 10
+        }
+      ]
+    },
+    {
+      "UUID": "com.kirkanos.evcc.dial",
+      "Name": "Loadpoint Dial",
+      "Icon": "images/actions/dial",
+      "Tooltip": "Turn to set the minimum charge current or the charge limit of a loadpoint, push to switch the charge mode",
+      "PropertyInspectorPath": "ui/dial.html",
+      "Controllers": [
+        "Encoder"
+      ],
+      "Encoder": {
+        "layout": "layouts/dial.json",
+        "Icon": "images/actions/dial",
+        "TriggerDescription": {
+          "Rotate": "Min current / charge limit",
+          "Push": "Next charge mode",
+          "Touch": "Next charge mode"
+        }
+      },
+      "SupportedInMultiActions": false,
+      "States": [
+        {
+          "Image": "images/key"
+        }
+      ]
+    }
+  ]
+}

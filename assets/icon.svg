@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- evcc Charge plugin icon: a lightning bolt above a state-of-charge bar. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#0B1220"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4ADE80"/>
+      <stop offset="1" stop-color="#22C55E"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
+  <path d="M286 72 168 246h84l-24 150 118-176h-84z" fill="url(#bolt)" stroke="url(#bolt)" stroke-width="30" stroke-linejoin="round"/>
+  <rect x="96" y="380" width="320" height="44" rx="22" fill="#334155"/>
+  <rect x="96" y="380" width="214" height="44" rx="22" fill="#22C55E"/>
+</svg>

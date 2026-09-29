@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Loadpoint settings</title>
+    <script src="sdpi-components.js"></script>
+    <script src="connection.js"></script>
+    <link rel="stylesheet" href="pi.css" />
+  </head>
+  <body>
+    <div id="evcc-connection"></div>
+
+    <div class="requires-connection" hidden>
+      <sdpi-item label="Loadpoint">
+        <sdpi-select setting="loadpoint" datasource="getLoadpoints" hot-reload placeholder="Select a loadpoint" loading="Loading loadpoints…"></sdpi-select>
+      </sdpi-item>
+
+      <p class="hint">
+        Shows the charge mode as color, the charge power and the vehicle SoC. Press the key to switch to the next charge
+        mode (Off, PV, Min + PV, Fast); hold it to switch charging off.
+      </p>
+      <p class="hint">
+        The loadpoint title is drawn on the key. If you set your own title, it is left out.
+      </p>
+    </div>
+  </body>
+</html>
