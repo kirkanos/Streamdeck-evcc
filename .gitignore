@@ -1,0 +1,7 @@
+node_modules/
+dist/
+bin/
+Release/
+*.streamDeckPlugin
+*.log
+.DS_Store
