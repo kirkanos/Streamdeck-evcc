@@ -10,7 +10,7 @@ import {
   type WillDisappearEvent,
 } from "@elgato/streamdeck";
 import { PLUGIN_ID } from "../config";
-import { nextMode } from "../evcc/model";
+import { type ChargeMode, nextMode } from "../evcc/model";
 import { evcc } from "../evcc/service";
 import { loadpointKey, messageKey } from "../render/keys";
 import { formatPower, loadpointCaption } from "../render/values";
@@ -101,7 +101,7 @@ export class LoadpointAction extends SingletonAction<LoadpointSettings> {
     }
   }
 
-  async #setMode(key: KeyAction<LoadpointSettings>, settings: LoadpointSettings, mode: "off" | "pv" | "minpv" | "now"): Promise<void> {
+  async #setMode(key: KeyAction<LoadpointSettings>, settings: LoadpointSettings, mode: ChargeMode): Promise<void> {
     const loadpoint = evcc.loadpoint(settings.loadpoint);
     const ok = loadpoint ? await evcc.setMode(loadpoint, mode) : false;
     if (!ok) {

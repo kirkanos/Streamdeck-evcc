@@ -1,9 +1,9 @@
 /** Data model of the site and loadpoints reported by evcc. */
 
-export type ChargeMode = "off" | "pv" | "minpv" | "now";
+export type ChargeMode = "off" | "pv" | "minpv" | "now" | "smart";
 
 /** Charge modes in the order the keys cycle through them. */
-export const MODES: ChargeMode[] = ["off", "pv", "minpv", "now"];
+export const MODES: ChargeMode[] = ["off", "pv", "minpv", "now", "smart"];
 
 export function isChargeMode(value: unknown): value is ChargeMode {
   return typeof value === "string" && (MODES as string[]).includes(value);

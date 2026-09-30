@@ -6,7 +6,8 @@ import { type EvccState, isChargeMode, type Loadpoint, type Site } from "./model
  *
  * evcc's state shape varies between versions: the REST response is either the
  * state itself or wrapped in `result`, grid power is `gridPower` or
- * `grid.power`, the charge limit is `limitSoc` or `targetSoc`. The WebSocket
+ * `grid.power`, the battery is `batteryPower`/`batterySoc` or
+ * `battery.power`/`battery.soc`, the charge limit is `limitSoc` or `targetSoc`. The WebSocket
  * sends objects like { "loadpoints.0.mode": "pv", "pvPower": 1234 }. Every
  * accessor here tolerates missing or oddly typed values.
  */
@@ -45,14 +46,16 @@ export function unwrapState(raw: unknown): Raw {
 }
 
 export function normalizeSite(raw: Raw): Site {
+  // evcc 0.3xx nests grid and battery: { grid: { power }, battery: { power, soc } }.
   const grid = isObject(raw.grid) ? raw.grid : undefined;
+  const battery = isObject(raw.battery) ? raw.battery : undefined;
   return {
     title: str(raw.siteTitle),
     pvPower: num(raw.pvPower),
     gridPower: num(raw.gridPower) ?? num(grid?.power),
     homePower: num(raw.homePower),
-    batteryPower: num(raw.batteryPower),
-    batterySoc: num(raw.batterySoc),
+    batteryPower: num(raw.batteryPower) ?? num(battery?.power),
+    batterySoc: num(raw.batterySoc) ?? num(battery?.soc),
   };
 }
 

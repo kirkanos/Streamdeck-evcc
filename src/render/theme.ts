@@ -20,6 +20,7 @@ export const MODE_COLOR: Record<ChargeMode, string> = {
   pv: THEME.ok,
   minpv: "#86EFAC",
   now: THEME.info,
+  smart: THEME.accent,
 };
 
 export const MODE_LABEL: Record<ChargeMode, string> = {
@@ -27,6 +28,7 @@ export const MODE_LABEL: Record<ChargeMode, string> = {
   pv: "PV",
   minpv: "Min + PV",
   now: "Fast",
+  smart: "Smart",
 };
 
 /** Colors of the site values. */

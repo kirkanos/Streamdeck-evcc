@@ -127,7 +127,8 @@ describe("modes and dial steps", () => {
     expect(nextMode("off")).toBe("pv");
     expect(nextMode("pv")).toBe("minpv");
     expect(nextMode("minpv")).toBe("now");
-    expect(nextMode("now")).toBe("off");
+    expect(nextMode("now")).toBe("smart");
+    expect(nextMode("smart")).toBe("off");
     expect(nextMode(undefined)).toBe("pv");
   });
 
@@ -149,5 +150,40 @@ describe("modes and dial steps", () => {
     expect(stepLimitSoc(undefined, -1)).toBe(95);
     expect(stepLimitSoc(82, 1)).toBe(85);
     expect(stepLimitSoc(82, -1)).toBe(80);
+  });
+});
+
+describe("evcc 0.316 state shape", () => {
+  // Trimmed from a real GET /api/state of evcc 0.316.1.
+  const real = {
+    version: "0.316.1",
+    siteTitle: "Mein Zuhause",
+    pvPower: 1807,
+    pv: [{ name: "db:9", title: "PV", power: 1807 }],
+    grid: { name: "db:10", power: 12 },
+    battery: { power: -1390, capacity: 13.245, soc: 87.92, devices: [{ title: "Powerwall" }] },
+    homePower: 429,
+    loadpoints: [{ title: "Carport", mode: "smart", chargePower: 0, vehicleSoc: 0, charging: false, connected: false, minCurrent: 6, limitSoc: 0, effectiveLimitSoc: 100 }],
+  };
+
+  it("reads nested grid and battery values", () => {
+    const state = normalizeState(real);
+    expect(state.site).toMatchObject({ title: "Mein Zuhause", pvPower: 1807, gridPower: 12, homePower: 429, batteryPower: -1390, batterySoc: 87.92 });
+  });
+
+  it("accepts the smart charge mode", () => {
+    const state = normalizeState(real);
+    expect(state.loadpoints[0].mode).toBe("smart");
+    expect(state.loadpoints[0].title).toBe("Carport");
+  });
+
+  it("applies battery and grid deltas from the WebSocket", () => {
+    const store = new StateStore();
+    store.replace(real);
+    const changes = store.apply({ "battery.soc": 90, "grid.power": -500, "loadpoints.0.mode": "pv" });
+    expect(changes.site).toBe(true);
+    expect(store.state.site.batterySoc).toBe(90);
+    expect(store.state.site.gridPower).toBe(-500);
+    expect(store.state.loadpoints[0].mode).toBe("pv");
   });
 });
