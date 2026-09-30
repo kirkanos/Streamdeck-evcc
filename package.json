@@ -1,6 +1,6 @@
 {
   "name": "streamdeck-evcc",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "evcc Charge: Charging state and PV situation from evcc, with charge mode switching.",
