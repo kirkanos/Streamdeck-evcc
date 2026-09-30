@@ -160,9 +160,16 @@ describe("vehicleKey", () => {
     expect(svg).toContain(">62% · charging<");
   });
 
-  it("shows Guest when no vehicle is assigned", () => {
-    const svg = decode(vehicleKey({ vehicle: undefined, connected: false, charging: false }));
+  it("shows Guest when a car is plugged in without a vehicle", () => {
+    const svg = decode(vehicleKey({ vehicle: undefined, connected: true, charging: false }));
     expect(svg).toContain(">Guest<");
     expect(svg).toContain(">not assigned<");
+  });
+
+  it("shows No car instead of Guest when nothing is plugged in", () => {
+    const svg = decode(vehicleKey({ vehicle: undefined, connected: false, charging: false }));
+    expect(svg).toContain(">No car<");
+    expect(svg).toContain(">not plugged<");
+    expect(svg).not.toContain(">Guest<");
   });
 });
