@@ -8,7 +8,7 @@ import { type EvccState, isChargeMode, type Loadpoint, type Site, type Vehicle }
  * state itself or wrapped in `result`, grid power is `gridPower` or
  * `grid.power`, the battery is `batteryPower`/`batterySoc` or
  * `battery.power`/`battery.soc`, the charge limit is `limitSoc` or `targetSoc`. The WebSocket
- * sends objects like { "loadpoints.0.mode": "pv", "pvPower": 1234 }. Every
+ * sends objects like { "loadpoints.0.mode": "smart", "pvPower": 1234 }. Every
  * accessor here tolerates missing or oddly typed values.
  */
 

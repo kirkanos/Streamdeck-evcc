@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { availableModes, modesFromSettings, nextMode, nextVehicle, stepLimitSoc, stepMinCurrent } from "./model";
+import { modesFromSettings, nextMode, nextVehicle, stepLimitSoc, stepMinCurrent } from "./model";
 import { normalizeState, parseLoadpointKey, StateStore } from "./state";
 
 const flat = {
@@ -12,7 +12,7 @@ const flat = {
   loadpoints: [
     {
       title: "Garage",
-      mode: "pv",
+      mode: "smart",
       chargePower: 3700,
       vehicleSoc: 45.4,
       charging: true,
@@ -33,7 +33,7 @@ describe("normalizeState", () => {
     const state = normalizeState(flat);
     expect(state.site).toEqual({ title: "Home", pvPower: 4321.5, gridPower: -1200, homePower: 800, batteryPower: -500, batterySoc: 62 });
     expect(state.loadpoints).toHaveLength(2);
-    expect(state.loadpoints[0]).toMatchObject({ index: 0, id: 1, title: "Garage", mode: "pv", chargePower: 3700, vehicleSoc: 45.4, charging: true, limitSoc: 80, chargeRemainingDuration: 5400 });
+    expect(state.loadpoints[0]).toMatchObject({ index: 0, id: 1, title: "Garage", mode: "smart", chargePower: 3700, vehicleSoc: 45.4, charging: true, limitSoc: 80, chargeRemainingDuration: 5400 });
     expect(state.loadpoints[1]).toMatchObject({ index: 1, id: 2, title: "Carport", mode: "off", connected: false, charging: false, chargePower: undefined });
   });
 
@@ -124,39 +124,24 @@ describe("parseLoadpointKey", () => {
 
 describe("modes and dial steps", () => {
   it("cycles the charge mode", () => {
-    expect(nextMode("off")).toBe("pv");
-    expect(nextMode("pv")).toBe("minpv");
-    expect(nextMode("minpv")).toBe("smart");
+    expect(nextMode("off")).toBe("smart");
     expect(nextMode("smart")).toBe("now");
     expect(nextMode("now")).toBe("off");
-    expect(nextMode(undefined)).toBe("pv");
+    expect(nextMode(undefined)).toBe("smart");
   });
 
   it("cycles only through the allowed modes", () => {
-    const allowed = modesFromSettings(["now", "smart", "off", "bogus"]);
-    expect(allowed).toEqual(["now", "smart", "off"]);
-    expect(nextMode("off", allowed)).toBe("smart");
-    expect(nextMode("smart", allowed)).toBe("now");
+    const allowed = modesFromSettings(["now", "off", "bogus", "minpv"]);
+    expect(allowed).toEqual(["now", "off"]);
+    expect(nextMode("off", allowed)).toBe("now");
     expect(nextMode("now", allowed)).toBe("off");
     // A current mode outside the subset leads to the subset's first mode.
-    expect(nextMode("pv", allowed)).toBe("off");
+    expect(nextMode("smart", allowed)).toBe("off");
     expect(modesFromSettings([])).toBeUndefined();
     expect(modesFromSettings("off")).toBeUndefined();
     expect(nextMode("off", modesFromSettings(["now"]))).toBe("now");
   });
 
-  it("offers only the modes the evcc version has", () => {
-    expect(availableModes("0.316.1")).toEqual(["off", "smart", "now"]);
-    expect(availableModes("0.207.3")).toEqual(["off", "pv", "minpv", "now"]);
-    expect(availableModes(undefined)).toEqual(["off", "pv", "minpv", "smart", "now"]);
-    const modern = availableModes("0.316.1");
-    expect(nextMode("off", undefined, modern)).toBe("smart");
-    expect(nextMode("smart", undefined, modern)).toBe("now");
-    expect(nextMode("now", undefined, modern)).toBe("off");
-    // A "Modes" setting that only names modes the version lacks is ignored.
-    expect(nextMode("off", modesFromSettings(["pv", "minpv"]), modern)).toBe("smart");
-    expect(nextMode("off", modesFromSettings(["now", "pv"]), modern)).toBe("now");
-  });
 
   it("steps the min current within 6 to 16 A", () => {
     expect(stepMinCurrent(6, 1)).toBe(7);
@@ -206,11 +191,11 @@ describe("evcc 0.316 state shape", () => {
   it("applies battery and grid deltas from the WebSocket", () => {
     const store = new StateStore();
     store.replace(real);
-    const changes = store.apply({ "battery.soc": 90, "grid.power": -500, "loadpoints.0.mode": "pv" });
+    const changes = store.apply({ "battery.soc": 90, "grid.power": -500, "loadpoints.0.mode": "now" });
     expect(changes.site).toBe(true);
     expect(store.state.site.batterySoc).toBe(90);
     expect(store.state.site.gridPower).toBe(-500);
-    expect(store.state.loadpoints[0].mode).toBe("pv");
+    expect(store.state.loadpoints[0].mode).toBe("now");
   });
 });
 

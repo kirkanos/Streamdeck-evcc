@@ -12,7 +12,7 @@ const loadpoint = (over: Partial<Loadpoint> = {}): Loadpoint => ({
   index: 0,
   id: 1,
   title: "Garage",
-  mode: "pv",
+  mode: "smart",
   chargePower: 3700,
   charging: true,
   connected: true,
@@ -82,9 +82,9 @@ describe("site values", () => {
 
 describe("loadpoint caption", () => {
   it("combines mode and vehicle state", () => {
-    expect(loadpointCaption(loadpoint({ chargeRemainingDuration: 5400 }))).toBe("PV · 1:30h");
-    expect(loadpointCaption(loadpoint({ chargeRemainingDuration: 0 }))).toBe("PV · charging");
-    expect(loadpointCaption(loadpoint({ charging: false, mode: "minpv" }))).toBe("Min+PV · plugged");
+    expect(loadpointCaption(loadpoint({ chargeRemainingDuration: 5400 }))).toBe("Smart · 1:30h");
+    expect(loadpointCaption(loadpoint({ chargeRemainingDuration: 0 }))).toBe("Smart · charging");
+    expect(loadpointCaption(loadpoint({ charging: false, mode: "smart" }))).toBe("Smart · plugged");
     expect(loadpointCaption(loadpoint({ charging: false, connected: false, mode: "off" }))).toBe("Off · no car");
     expect(loadpointCaption(loadpoint({ mode: undefined, connected: false }))).toBe("– · no car");
   });
@@ -113,7 +113,7 @@ describe("images", () => {
 
   it("escapes names", () => {
     expect(escapeXml(`<a & "b">`)).toBe("&lt;a &amp; &quot;b&quot;&gt;");
-    const svg = decode(loadpointKey({ name: "R&D <lp>", mode: "pv", value: "1", charging: false, connected: true }));
+    const svg = decode(loadpointKey({ name: "R&D <lp>", mode: "smart", value: "1", charging: false, connected: true }));
     expect(svg).toContain("R&amp;D");
     expect(svg).not.toContain("<lp>");
   });
@@ -136,7 +136,7 @@ describe("images", () => {
 
   it("draws the dial canvas at 200x100 with the target value", () => {
     const svg = decode(
-      dialCanvas({ title: "Garage", mode: "pv", value: "3.7", unit: "kW", caption: "PV · charging", soc: 45, charging: true, connected: true, target: { value: "8", unit: "A", label: "min current", pending: true } }),
+      dialCanvas({ title: "Garage", mode: "smart", value: "3.7", unit: "kW", caption: "Smart · charging", soc: 45, charging: true, connected: true, target: { value: "8", unit: "A", label: "min current", pending: true } }),
     );
     expect(svg).toContain('width="200" height="100"');
     expect(svg).toContain(">8<tspan");

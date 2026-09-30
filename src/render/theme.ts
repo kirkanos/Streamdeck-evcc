@@ -17,18 +17,14 @@ export const THEME = {
 
 export const MODE_COLOR: Record<ChargeMode, string> = {
   off: THEME.idle,
-  pv: THEME.ok,
-  minpv: "#86EFAC",
+  smart: THEME.ok,
   now: THEME.info,
-  smart: THEME.accent,
 };
 
 export const MODE_LABEL: Record<ChargeMode, string> = {
   off: "Off",
-  pv: "PV",
-  minpv: "Min+PV",
-  now: "Fast",
   smart: "Smart",
+  now: "Fast",
 };
 
 /** Colors of the site values. */

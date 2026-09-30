@@ -1,45 +1,22 @@
 /** Data model of the site and loadpoints reported by evcc. */
 
-export type ChargeMode = "off" | "pv" | "minpv" | "now" | "smart";
+/** Charge modes of evcc 0.300 and newer: off, smart (solar with the "always charge" switch) and now (fast). */
+export type ChargeMode = "off" | "smart" | "now";
 
 /** Charge modes in the order the keys cycle through them. */
-export const MODES: ChargeMode[] = ["off", "pv", "minpv", "smart", "now"];
+export const MODES: ChargeMode[] = ["off", "smart", "now"];
 
 export function isChargeMode(value: unknown): value is ChargeMode {
   return typeof value === "string" && (MODES as string[]).includes(value);
 }
 
 /**
- * The modes an evcc version offers. Since 0.300 the UI has Off, Smart and
- * Fast (PV and Min+PV became the "smart" mode with its "always charge"
- * switch); older versions have Off, PV, Min+PV and Fast. Unknown version:
- * everything, so nothing is hidden by mistake.
+ * The mode after `mode` in the cycle. `allowed` (a key's "Modes" setting)
+ * restricts the cycle to a subset in MODES order; a current mode outside the
+ * subset leads to the subset's first mode.
  */
-export function availableModes(version: string | undefined): ChargeMode[] {
-  const match = /^(\d+)\.(\d+)/.exec(version ?? "");
-  if (!match) {
-    return MODES;
-  }
-  const [major, minor] = [Number(match[1]), Number(match[2])];
-  return major > 0 || minor >= 300 ? ["off", "smart", "now"] : ["off", "pv", "minpv", "now"];
-}
-
-/**
- * The mode after `mode` in the cycle. The cycle is `available` (what the evcc
- * version offers) restricted to `allowed` (a key's "Modes" setting), in MODES
- * order; a current mode outside the cycle leads to its first mode.
- */
-export function nextMode(mode: ChargeMode | undefined, allowed?: ChargeMode[], available: ChargeMode[] = MODES): ChargeMode {
-  let cycle = MODES.filter((m) => available.includes(m));
-  if (allowed && allowed.length > 0) {
-    const restricted = cycle.filter((m) => allowed.includes(m));
-    if (restricted.length > 0) {
-      cycle = restricted;
-    }
-  }
-  if (cycle.length === 0) {
-    cycle = MODES;
-  }
+export function nextMode(mode: ChargeMode | undefined, allowed?: ChargeMode[]): ChargeMode {
+  const cycle = allowed && allowed.length > 0 ? MODES.filter((m) => allowed.includes(m)) : MODES;
   const index = cycle.indexOf(mode ?? "off");
   return cycle[(index + 1) % cycle.length];
 }

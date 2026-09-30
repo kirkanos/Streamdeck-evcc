@@ -1,5 +1,5 @@
 import { EventEmitter } from "node:events";
-import { availableModes, type ChargeMode, type EvccState, type Loadpoint, type Site, type Vehicle } from "./model";
+import type { ChargeMode, EvccState, Loadpoint, Site, Vehicle } from "./model";
 import { StateStore } from "./state";
 
 export type EvccSettings = { url?: string };
@@ -84,11 +84,6 @@ export class EvccService extends EventEmitter<{ site: []; loadpoint: [number]; l
 
   vehicles(): Vehicle[] {
     return this.#store.state.vehicles;
-  }
-
-  /** Charge modes this evcc version offers. */
-  availableModes(): ChargeMode[] {
-    return availableModes(this.#store.state.version);
   }
 
   /** Loadpoint by 0-based index (settings store it as a string). */

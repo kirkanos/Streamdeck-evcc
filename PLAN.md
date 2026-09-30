@@ -8,7 +8,7 @@ See the charging state and the PV situation on the deck, and switch the charge m
 
 ## Keys & dials
 
-- **Loadpoint** key: charge mode as background color (off gray, pv green, minpv light green, now blue), charge power in kW, vehicle SoC as a bar, plug/charging icon. Press cycles the mode (off, pv, minpv, now), long press sets off.
+- **Loadpoint** key: charge mode as background color (off gray, smart green, now blue; evcc 0.300+), charge power in kW, vehicle SoC as a bar, plug/charging icon. Press cycles the mode (off, pv, minpv, now), long press sets off.
 - **Site** key: PV production, grid power with sign (import/export), battery SoC. Press cycles the value shown, like the value cycling in Kuma Glance.
 - **Dial**: turn sets the minimum current (6 to 16 A) or the target SoC (configurable), push cycles the mode, touch strip shows a loadpoint summary (mode, power, SoC, remaining time).
 
