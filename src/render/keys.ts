@@ -93,7 +93,7 @@ export type SiteKey = {
 
 export function siteKey(k: SiteKey): string {
   const lines = k.name ? wrapText(k.name, 11, 2) : [];
-  const names = lines.map((line, i) => text(line, { x: S / 2, y: 28 + i * 21, size: 19 })).join("");
+  const names = lines.map((line, i) => text(line, { x: S / 2, y: 30 + i * 21, size: lines.length > 1 ? 19 : 22 })).join("");
   const bg = background("bg", mix(k.color, THEME.base, 0.7), THEME.base, S, S);
   const accent = `<rect x="0" y="0" width="${S}" height="5" fill="${k.color}"/>`;
 

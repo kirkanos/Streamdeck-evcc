@@ -51,7 +51,7 @@ export function nextSiteValue(value: SiteValue | undefined): SiteValue {
   return SITE_VALUE_ORDER[(index + 1) % SITE_VALUE_ORDER.length];
 }
 
-export type SiteDisplay = Formatted & { caption: string; color: string; short: string };
+export type SiteDisplay = Formatted & { caption: string; color: string; short: string; label: string };
 
 /** The big value shown on a Site key for one of the site values. */
 export function siteDisplay(site: Site, value: SiteValue = "pv"): SiteDisplay {
@@ -65,14 +65,15 @@ export function siteDisplay(site: Site, value: SiteValue = "pv"): SiteDisplay {
         caption: importing ? "grid import" : exporting ? "grid export" : "grid",
         color: importing ? SITE_COLOR.gridImport : exporting ? SITE_COLOR.gridExport : THEME.idle,
         short: "Grid",
+        label: "Grid",
       };
     }
     case "battery":
-      return { ...formatSoc(site.batterySoc), caption: batteryCaption(site.batteryPower), color: SITE_COLOR.battery, short: "Bat" };
+      return { ...formatSoc(site.batterySoc), caption: batteryCaption(site.batteryPower), color: SITE_COLOR.battery, short: "Bat", label: "Battery" };
     case "home":
-      return { ...formatPower(site.homePower), caption: "home", color: SITE_COLOR.home, short: "Home" };
+      return { ...formatPower(site.homePower), caption: "home", color: SITE_COLOR.home, short: "Home", label: "Home" };
     default:
-      return { ...formatPower(site.pvPower), caption: "PV production", color: SITE_COLOR.pv, short: "PV" };
+      return { ...formatPower(site.pvPower), caption: "PV production", color: SITE_COLOR.pv, short: "PV", label: "PV" };
   }
 }
 

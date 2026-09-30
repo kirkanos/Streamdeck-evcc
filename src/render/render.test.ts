@@ -121,6 +121,7 @@ describe("images", () => {
   it("draws the site key with the other values at the bottom", () => {
     const svg = decode(
       siteKey({
+        name: "PV",
         color: "#F59E0B",
         value: "4.3",
         unit: "kW",
@@ -134,6 +135,7 @@ describe("images", () => {
     );
     expect(svg).toContain(">4.3<tspan");
     expect(svg).toContain(">-1.2 kW<");
+    expect(svg).toContain('font-size="22"');
     expect(svg).toContain(">Home<");
     expect(svg).toContain('fill="#F59E0B"');
   });

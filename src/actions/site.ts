@@ -85,7 +85,8 @@ export class SiteAction extends SingletonAction<SiteSettings> {
     showImage(
       key,
       siteKey({
-        name: this.#hasTitle.get(actionId) ? undefined : site.title,
+        // The value's name, not the site title: readable at a glance on a small key.
+        name: this.#hasTitle.get(actionId) ? undefined : main.label,
         color: main.color,
         value: main.value,
         unit: main.unit,
