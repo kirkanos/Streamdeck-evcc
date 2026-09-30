@@ -72,21 +72,21 @@ describe("site values", () => {
   });
 
   it("describes the other values", () => {
-    expect(siteDisplay(site, "pv")).toMatchObject({ value: "4.3", unit: "kW", caption: "PV production" });
-    expect(siteDisplay(site, "battery")).toMatchObject({ value: "62", unit: "%", caption: "battery charging" });
-    expect(siteDisplay({ ...site, batteryPower: 300 }, "battery")).toMatchObject({ caption: "battery discharging" });
-    expect(siteDisplay(site, "home")).toMatchObject({ value: "800", unit: "W", caption: "home" });
+    expect(siteDisplay(site, "pv")).toMatchObject({ value: "4.3", unit: "kW", caption: "production" });
+    expect(siteDisplay(site, "battery")).toMatchObject({ value: "62", unit: "%", caption: "charging" });
+    expect(siteDisplay({ ...site, batteryPower: 300 }, "battery")).toMatchObject({ caption: "discharging" });
+    expect(siteDisplay(site, "home")).toMatchObject({ value: "800", unit: "W", caption: "consumption" });
     expect(siteDisplay({}, "pv")).toMatchObject({ value: "–" });
   });
 });
 
 describe("loadpoint caption", () => {
   it("combines mode and vehicle state", () => {
-    expect(loadpointCaption(loadpoint({ chargeRemainingDuration: 5400 }))).toBe("PV · 1:30 h");
+    expect(loadpointCaption(loadpoint({ chargeRemainingDuration: 5400 }))).toBe("PV · 1:30h");
     expect(loadpointCaption(loadpoint({ chargeRemainingDuration: 0 }))).toBe("PV · charging");
-    expect(loadpointCaption(loadpoint({ charging: false, mode: "minpv" }))).toBe("Min + PV · connected");
-    expect(loadpointCaption(loadpoint({ charging: false, connected: false, mode: "off" }))).toBe("Off · no vehicle");
-    expect(loadpointCaption(loadpoint({ mode: undefined, connected: false }))).toBe("– · no vehicle");
+    expect(loadpointCaption(loadpoint({ charging: false, mode: "minpv" }))).toBe("Min+PV · plugged");
+    expect(loadpointCaption(loadpoint({ charging: false, connected: false, mode: "off" }))).toBe("Off · no car");
+    expect(loadpointCaption(loadpoint({ mode: undefined, connected: false }))).toBe("– · no car");
   });
 });
 
@@ -119,12 +119,12 @@ describe("images", () => {
   });
 
   it("draws the site key with the value name on top and one big value", () => {
-    const svg = decode(siteKey({ name: "PV", color: "#F59E0B", value: "4.3", unit: "kW", caption: "PV production" }));
+    const svg = decode(siteKey({ name: "PV", color: "#F59E0B", value: "4.3", unit: "kW", caption: "production" }));
     expect(svg).toContain(">PV<");
     expect(svg).toContain('font-size="22"');
     expect(svg).toContain(">4.3<tspan");
     expect(svg).toContain('font-size="46"');
-    expect(svg).toContain(">PV production<");
+    expect(svg).toContain(">production<");
     expect(svg).toContain('fill="#F59E0B"');
   });
 
@@ -150,12 +150,12 @@ describe("vehicleKey", () => {
     const svg = decode(vehicleKey({ name: "Carport", vehicle: "ID3", soc: 61.6, connected: true, charging: true }));
     expect(svg).toContain(">Carport<");
     expect(svg).toContain(">ID3<");
-    expect(svg).toContain(">62 % · charging<");
+    expect(svg).toContain(">62% · charging<");
   });
 
   it("shows Guest when no vehicle is assigned", () => {
     const svg = decode(vehicleKey({ vehicle: undefined, connected: false, charging: false }));
     expect(svg).toContain(">Guest<");
-    expect(svg).toContain(">no vehicle assigned<");
+    expect(svg).toContain(">not assigned<");
   });
 });

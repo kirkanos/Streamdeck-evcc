@@ -7,10 +7,10 @@ Unofficial plugin, not affiliated with the evcc project.
 ## Features
 
 * **Loadpoint** key for one loadpoint:
-  * The charge mode as background color: ⬛ off, 🟩 PV, 🟢 Min + PV, 🟦 Fast.
-  * The loadpoint title (left out if you set your own title on the key), the charge power, the mode with the remaining charge time, and the vehicle SoC as a bar with a plug / bolt glyph.
-  * Pressing the key switches to the next charge mode (Off, PV, Min + PV, Fast, Smart); holding it switches charging off.
-* **Vehicle** key: the vehicle assigned to a loadpoint (or "Guest") with its SoC. Pressing the key assigns the next vehicle configured in evcc, after the last one the guest vehicle; holding it removes the vehicle. Handy when evcc does not detect the vehicle by itself.
+  * The charge mode as background color: ⬛ off, 🟩 PV, 🟢 Min+PV, 🟦 Fast, 🟪 Smart.
+  * "Wallbox" on top (left out if you set your own title on the key), the charge power, the mode with the remaining charge time or the plug state, and the vehicle SoC as a bar with a plug / bolt glyph.
+  * Pressing the key switches to the next charge mode (Off, PV, Min+PV, Fast, Smart); holding it switches charging off.
+* **Vehicle** key: "Vehicle" on top, the vehicle assigned to a loadpoint (or "Guest") big, its SoC and plug state below. Pressing the key assigns the next vehicle configured in evcc, after the last one the guest vehicle; holding it removes the vehicle. Handy when evcc does not detect the vehicle by itself.
 * **Site** key: PV production, grid power with sign (import / export), battery SoC or home consumption, with the value's name on top. Pressing the key switches to the next value.
 * **Loadpoint Dial** (Stream Deck + / + XL): turning the dial sets the minimum charge current (6 to 16 A) or the charge limit (SoC, 5 % steps) of a loadpoint; pushing the dial or tapping the touch strip switches the charge mode. The touch strip shows mode, power, SoC, remaining time and the value the dial adjusts.
 * Live updates over the evcc WebSocket, the same one the evcc web UI uses; the REST API is polled every 10 s while the WebSocket is down. Works with the flat state of older evcc versions and the `result`-wrapped state of newer ones.

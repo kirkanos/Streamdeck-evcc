@@ -134,7 +134,8 @@ export class LoadpointAction extends SingletonAction<LoadpointSettings> {
     showImage(
       key,
       loadpointKey({
-        name: this.#hasTitle.get(actionId) ? undefined : loadpoint.title,
+        // "Wallbox" instead of the loadpoint title: short and readable on a key.
+        name: this.#hasTitle.get(actionId) ? undefined : "Wallbox",
         mode: loadpoint.mode,
         ...formatPower(loadpoint.chargePower),
         caption: loadpointCaption(loadpoint),

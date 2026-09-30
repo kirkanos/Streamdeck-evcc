@@ -109,7 +109,7 @@ export class VehicleAction extends SingletonAction<LoadpointSettings> {
     showImage(
       key,
       vehicleKey({
-        name: this.#hasTitle.get(actionId) ? undefined : loadpoint.title,
+        name: this.#hasTitle.get(actionId) ? undefined : "Vehicle",
         vehicle: vehicle?.title ?? loadpoint.vehicleTitle,
         soc: loadpoint.vehicleSoc,
         connected: loadpoint.connected,

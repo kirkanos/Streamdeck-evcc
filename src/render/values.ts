@@ -71,30 +71,31 @@ export function siteDisplay(site: Site, value: SiteValue = "pv"): SiteDisplay {
     case "battery":
       return { ...formatSoc(site.batterySoc), caption: batteryCaption(site.batteryPower), color: SITE_COLOR.battery, short: "Bat", label: "Battery" };
     case "home":
-      return { ...formatPower(site.homePower), caption: "home", color: SITE_COLOR.home, short: "Home", label: "Home" };
+      return { ...formatPower(site.homePower), caption: "consumption", color: SITE_COLOR.home, short: "Home", label: "Home" };
     default:
-      return { ...formatPower(site.pvPower), caption: "PV production", color: SITE_COLOR.pv, short: "PV", label: "PV" };
+      return { ...formatPower(site.pvPower), caption: "production", color: SITE_COLOR.pv, short: "PV", label: "PV" };
   }
 }
 
 function batteryCaption(power: number | undefined): string {
   if (power === undefined || Math.round(Math.abs(power)) === 0) {
-    return "battery";
+    return "idle";
   }
-  return power < 0 ? "battery charging" : "battery discharging";
+  return power < 0 ? "charging" : "discharging";
 }
 
 /** Caption of a loadpoint: charge mode and vehicle state. */
 export function loadpointCaption(lp: Loadpoint): string {
+  // Kept short: the caption is drawn large enough to read on a small key.
   const mode = lp.mode ? MODE_LABEL[lp.mode] : "–";
   if (!lp.connected) {
-    return `${mode} · no vehicle`;
+    return `${mode} · no car`;
   }
   if (lp.charging) {
     const remaining = formatDuration(lp.chargeRemainingDuration);
-    return remaining ? `${mode} · ${remaining}` : `${mode} · charging`;
+    return remaining ? `${mode} · ${remaining.replace(/\s*h$/, "h")}` : `${mode} · charging`;
   }
-  return `${mode} · connected`;
+  return `${mode} · plugged`;
 }
 
 export const modeLabel = (mode: ChargeMode | undefined): string => (mode ? MODE_LABEL[mode] : "–");

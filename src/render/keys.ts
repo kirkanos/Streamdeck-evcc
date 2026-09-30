@@ -70,7 +70,7 @@ export function loadpointKey(k: LoadpointKey): string {
     suffix: k.unit,
     suffixSize: Math.round(valueSize * 0.5),
   });
-  const caption = k.caption ? text(truncate(k.caption, 20), { x: S / 2, y: CAPTION_Y[lines.length], size: 14, weight: 600, opacity: 0.7 }) : "";
+  const caption = k.caption ? text(truncate(k.caption, 15), { x: S / 2, y: CAPTION_Y[lines.length] + 2, size: 18, weight: 700, opacity: 0.85 }) : "";
 
   // Bottom row: plug / bolt glyph and the vehicle SoC bar.
   const glyph = k.charging ? chargeGlyph("charging", 10, 118, 20) : k.connected ? chargeGlyph("connected", 10, 118, 20) : "";
@@ -106,7 +106,7 @@ export function siteKey(k: SiteKey): string {
     suffix: k.unit,
     suffixSize: Math.round(valueSize * 0.5),
   });
-  const caption = text(truncate(k.caption, 20), { x: S / 2, y: 126, size: 15, weight: 600, opacity: 0.7 });
+  const caption = text(truncate(k.caption, 13), { x: S / 2, y: 128, size: 20, weight: 700, opacity: 0.85 });
 
   return toDataUrl(svg(S, S, bg + accent + names + value + caption));
 }
@@ -136,12 +136,12 @@ export function vehicleKey(k: VehicleKey): string {
 
   const caption = k.vehicle
     ? k.soc !== undefined && k.connected
-      ? `${Math.round(k.soc)} % · ${k.charging ? "charging" : "connected"}`
+      ? `${Math.round(k.soc)}% · ${k.charging ? "charging" : "plugged"}`
       : k.connected
-        ? "connected"
-        : "not connected"
-    : "no vehicle assigned";
-  const captionText = text(truncate(caption, 20), { x: S / 2, y: 126, size: 14, weight: 600, opacity: 0.7 });
+        ? "plugged"
+        : "not plugged"
+    : "not assigned";
+  const captionText = text(truncate(caption, 15), { x: S / 2, y: 128, size: 18, weight: 700, opacity: 0.85 });
 
   return toDataUrl(svg(S, S, bg + accent + names + title + captionText));
 }

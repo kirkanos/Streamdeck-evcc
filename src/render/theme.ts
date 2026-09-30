@@ -26,7 +26,7 @@ export const MODE_COLOR: Record<ChargeMode, string> = {
 export const MODE_LABEL: Record<ChargeMode, string> = {
   off: "Off",
   pv: "PV",
-  minpv: "Min + PV",
+  minpv: "Min+PV",
   now: "Fast",
   smart: "Smart",
 };
