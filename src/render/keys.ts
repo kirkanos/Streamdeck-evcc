@@ -88,7 +88,7 @@ export function loadpointKey(k: LoadpointKey): string {
   const glyph = k.charging ? chargeGlyph("charging", 10, 118, 20) : k.connected ? chargeGlyph("connected", 10, 118, 20) : "";
   const barX = glyph ? 36 : 10;
   const bar = socBar(k.connected ? k.soc : undefined, barX, 123, S - barX - 10, 10, k.mode === "off" ? THEME.subtle : color);
-  const badge = k.alwaysCharge ? alwaysBadge(S - 38, 11) : "";
+  const badge = k.alwaysCharge ? alwaysBadge(S - 30, 10, 0.8) : "";
 
   return toDataUrl(svg(S, S, modeBackground(k.mode) + accent + names + value + caption + glyph + bar + badge));
 }
