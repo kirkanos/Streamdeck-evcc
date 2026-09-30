@@ -81,14 +81,12 @@ export function loadpointKey(k: LoadpointKey): string {
 }
 
 export type SiteKey = {
-  /** Site title; omitted when the user shows their own title on the key. */
+  /** Name of the shown value; omitted when the user shows their own title on the key. */
   name?: string;
   color: string;
   value: string;
   unit?: string;
   caption: string;
-  /** The other site values, shown small at the bottom. */
-  others: { label: string; value: string; unit?: string }[];
 };
 
 export function siteKey(k: SiteKey): string {
@@ -97,32 +95,20 @@ export function siteKey(k: SiteKey): string {
   const bg = background("bg", mix(k.color, THEME.base, 0.7), THEME.base, S, S);
   const accent = `<rect x="0" y="0" width="${S}" height="5" fill="${k.color}"/>`;
 
+  // One big value only: small extra numbers are unreadable on a key.
   const long = k.value.length + (k.unit ? k.unit.length / 2 : 0) > 5;
-  const valueSize = Math.round(34 * (long ? 0.8 : 1));
+  const valueSize = Math.round(46 * (long ? 0.75 : 1));
   const value = text(k.value, {
     x: S / 2,
-    y: VALUE_Y[lines.length],
+    y: lines.length > 1 ? 104 : 96,
     size: valueSize,
     weight: 800,
     suffix: k.unit,
     suffixSize: Math.round(valueSize * 0.5),
   });
-  const caption = text(truncate(k.caption, 20), { x: S / 2, y: CAPTION_Y[lines.length], size: 14, weight: 600, opacity: 0.7 });
+  const caption = text(truncate(k.caption, 20), { x: S / 2, y: 126, size: 15, weight: 600, opacity: 0.7 });
 
-  const others = k.others.slice(0, 3);
-  const columnWidth = (S - 16) / Math.max(1, others.length);
-  const row = others
-    .map((o, i) => {
-      const cx = 8 + columnWidth * (i + 0.5);
-      return (
-        text(o.unit ? `${o.value} ${o.unit}` : o.value, { x: cx, y: 124, size: 12, weight: 700, opacity: 0.9 }) +
-        text(o.label, { x: cx, y: 136, size: 9, weight: 600, opacity: 0.6 })
-      );
-    })
-    .join("");
-  const divider = others.length > 0 ? `<rect x="10" y="110" width="${S - 20}" height="1" fill="#FFFFFF" fill-opacity="0.15"/>` : "";
-
-  return toDataUrl(svg(S, S, bg + accent + names + value + caption + divider + row));
+  return toDataUrl(svg(S, S, bg + accent + names + value + caption));
 }
 
 /** Neutral key with two lines of text, e.g. "Select / a loadpoint" or "Offline". */

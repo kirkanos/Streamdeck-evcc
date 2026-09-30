@@ -118,25 +118,13 @@ describe("images", () => {
     expect(svg).not.toContain("<lp>");
   });
 
-  it("draws the site key with the other values at the bottom", () => {
-    const svg = decode(
-      siteKey({
-        name: "PV",
-        color: "#F59E0B",
-        value: "4.3",
-        unit: "kW",
-        caption: "PV production",
-        others: [
-          { label: "Grid", value: "-1.2", unit: "kW" },
-          { label: "Bat", value: "62", unit: "%" },
-          { label: "Home", value: "800", unit: "W" },
-        ],
-      }),
-    );
-    expect(svg).toContain(">4.3<tspan");
-    expect(svg).toContain(">-1.2 kW<");
+  it("draws the site key with the value name on top and one big value", () => {
+    const svg = decode(siteKey({ name: "PV", color: "#F59E0B", value: "4.3", unit: "kW", caption: "PV production" }));
+    expect(svg).toContain(">PV<");
     expect(svg).toContain('font-size="22"');
-    expect(svg).toContain(">Home<");
+    expect(svg).toContain(">4.3<tspan");
+    expect(svg).toContain('font-size="46"');
+    expect(svg).toContain(">PV production<");
     expect(svg).toContain('fill="#F59E0B"');
   });
 

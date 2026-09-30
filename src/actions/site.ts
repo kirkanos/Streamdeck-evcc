@@ -11,7 +11,7 @@ import {
 import { PLUGIN_ID } from "../config";
 import { evcc } from "../evcc/service";
 import { messageKey, siteKey } from "../render/keys";
-import { nextSiteValue, SITE_VALUE_ORDER, siteDisplay, type SiteValue } from "../render/values";
+import { nextSiteValue, siteDisplay, type SiteValue } from "../render/values";
 import { showImage, updates } from "../throttle";
 
 export type SiteSettings = {
@@ -77,10 +77,6 @@ export class SiteAction extends SingletonAction<SiteSettings> {
     const value = settings.value ?? "pv";
     const site = evcc.site;
     const main = siteDisplay(site, value);
-    const others = SITE_VALUE_ORDER.filter((v) => v !== value).map((v) => {
-      const d = siteDisplay(site, v);
-      return { label: d.short, value: d.value, unit: d.unit };
-    });
 
     showImage(
       key,
@@ -91,7 +87,6 @@ export class SiteAction extends SingletonAction<SiteSettings> {
         value: main.value,
         unit: main.unit,
         caption: main.caption,
-        others,
       }),
     );
   }
