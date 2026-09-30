@@ -1,4 +1,18 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>kirkanos/renovate-config"]
+  "extends": [
+    "github>kirkanos/renovate-config"
+  ],
+  "packageRules": [
+    {
+      "description": "TypeScript 7 (the Go compiler) is not supported by @rollup/plugin-typescript yet; hold the major until it is",
+      "matchPackageNames": [
+        "typescript"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    }
+  ]
 }
