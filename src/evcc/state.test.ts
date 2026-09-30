@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { nextMode, nextVehicle, stepLimitSoc, stepMinCurrent } from "./model";
+import { modesFromSettings, nextMode, nextVehicle, stepLimitSoc, stepMinCurrent } from "./model";
 import { normalizeState, parseLoadpointKey, StateStore } from "./state";
 
 const flat = {
@@ -126,10 +126,23 @@ describe("modes and dial steps", () => {
   it("cycles the charge mode", () => {
     expect(nextMode("off")).toBe("pv");
     expect(nextMode("pv")).toBe("minpv");
-    expect(nextMode("minpv")).toBe("now");
-    expect(nextMode("now")).toBe("smart");
-    expect(nextMode("smart")).toBe("off");
+    expect(nextMode("minpv")).toBe("smart");
+    expect(nextMode("smart")).toBe("now");
+    expect(nextMode("now")).toBe("off");
     expect(nextMode(undefined)).toBe("pv");
+  });
+
+  it("cycles only through the allowed modes", () => {
+    const allowed = modesFromSettings(["now", "smart", "off", "bogus"]);
+    expect(allowed).toEqual(["now", "smart", "off"]);
+    expect(nextMode("off", allowed)).toBe("smart");
+    expect(nextMode("smart", allowed)).toBe("now");
+    expect(nextMode("now", allowed)).toBe("off");
+    // A current mode outside the subset leads to the subset's first mode.
+    expect(nextMode("pv", allowed)).toBe("off");
+    expect(modesFromSettings([])).toBeUndefined();
+    expect(modesFromSettings("off")).toBeUndefined();
+    expect(nextMode("off", modesFromSettings(["now"]))).toBe("now");
   });
 
   it("steps the min current within 6 to 16 A", () => {

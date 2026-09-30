@@ -10,7 +10,7 @@ import {
   type WillDisappearEvent,
 } from "@elgato/streamdeck";
 import { PLUGIN_ID } from "../config";
-import { type ChargeMode, nextMode } from "../evcc/model";
+import { type ChargeMode, modesFromSettings, nextMode } from "../evcc/model";
 import { evcc } from "../evcc/service";
 import { loadpointKey, messageKey } from "../render/keys";
 import { formatPower, loadpointCaption } from "../render/values";
@@ -19,6 +19,8 @@ import { showImage, updates } from "../throttle";
 export type LoadpointSettings = {
   /** 0-based loadpoint index, as a string (select values are strings). */
   loadpoint?: string;
+  /** Charge modes the key cycles through; all when unset. */
+  modes?: string[];
 };
 
 /** Holding a key this long sets the charge mode to off instead of cycling it. */
@@ -89,7 +91,7 @@ export class LoadpointAction extends SingletonAction<LoadpointSettings> {
     }
     this.#clearPress(ev.action.id);
     const loadpoint = evcc.loadpoint(ev.payload.settings.loadpoint);
-    await this.#setMode(ev.action, ev.payload.settings, nextMode(loadpoint?.mode));
+    await this.#setMode(ev.action, ev.payload.settings, nextMode(loadpoint?.mode, modesFromSettings(ev.payload.settings.modes)));
   }
 
   /** Re-renders all visible keys, or only those showing loadpoint `index`. */

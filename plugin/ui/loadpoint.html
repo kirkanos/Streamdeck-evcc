@@ -15,9 +15,20 @@
         <sdpi-select setting="loadpoint" datasource="getLoadpoints" hot-reload placeholder="Select a loadpoint" loading="Loading loadpoints…"></sdpi-select>
       </sdpi-item>
 
+      <sdpi-item label="Modes">
+        <sdpi-checkbox-list setting="modes" columns="2">
+          <option value="off">Off</option>
+          <option value="pv">PV</option>
+          <option value="minpv">Min+PV</option>
+          <option value="smart">Smart</option>
+          <option value="now">Fast</option>
+        </sdpi-checkbox-list>
+      </sdpi-item>
+      <p class="hint">Which charge modes pressing the key cycles through, in this order. Nothing ticked means all of them.</p>
+
       <p class="hint">
         Shows the charge mode as color, the charge power and the vehicle SoC. Press the key to switch to the next charge
-        mode (Off, PV, Min+PV, Fast, Smart); hold it to switch charging off.
+        mode; hold it to switch charging off.
       </p>
       <p class="hint">
         The loadpoint title is drawn on the key. If you set your own title, it is left out.

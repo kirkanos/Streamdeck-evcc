@@ -10,7 +10,7 @@ import {
   type WillDisappearEvent,
 } from "@elgato/streamdeck";
 import { PLUGIN_ID } from "../config";
-import { type Loadpoint, nextMode, stepLimitSoc, stepMinCurrent } from "../evcc/model";
+import { type Loadpoint, modesFromSettings, nextMode, stepLimitSoc, stepMinCurrent } from "../evcc/model";
 import { evcc } from "../evcc/service";
 import { dialCanvas, dialMessage } from "../render/dial";
 import { formatPower, loadpointCaption } from "../render/values";
@@ -22,6 +22,8 @@ export type DialSettings = {
   /** 0-based loadpoint index, as a string (select values are strings). */
   loadpoint?: string;
   function?: DialFunction;
+  /** Charge modes the push cycles through; all when unset. */
+  modes?: string[];
 };
 
 /** Turning the dial is sent to evcc once the dial has been still for this long. */
@@ -98,7 +100,7 @@ export class LoadpointDialAction extends SingletonAction<DialSettings> {
 
   async #cycleMode(dial: DialAction<DialSettings>, settings: DialSettings): Promise<void> {
     const loadpoint = evcc.loadpoint(settings.loadpoint);
-    const ok = loadpoint ? await evcc.setMode(loadpoint, nextMode(loadpoint.mode)) : false;
+    const ok = loadpoint ? await evcc.setMode(loadpoint, nextMode(loadpoint.mode, modesFromSettings(settings.modes))) : false;
     if (!ok) {
       await dial.showAlert();
     }

@@ -3,15 +3,30 @@
 export type ChargeMode = "off" | "pv" | "minpv" | "now" | "smart";
 
 /** Charge modes in the order the keys cycle through them. */
-export const MODES: ChargeMode[] = ["off", "pv", "minpv", "now", "smart"];
+export const MODES: ChargeMode[] = ["off", "pv", "minpv", "smart", "now"];
 
 export function isChargeMode(value: unknown): value is ChargeMode {
   return typeof value === "string" && (MODES as string[]).includes(value);
 }
 
-export function nextMode(mode: ChargeMode | undefined): ChargeMode {
-  const index = MODES.indexOf(mode ?? "off");
-  return MODES[(index + 1) % MODES.length];
+/**
+ * The mode after `mode` in the cycle. `allowed` (a key's "Modes" setting)
+ * restricts the cycle to a subset in MODES order; a current mode outside the
+ * subset leads to the subset's first mode.
+ */
+export function nextMode(mode: ChargeMode | undefined, allowed?: ChargeMode[]): ChargeMode {
+  const cycle = allowed && allowed.length > 0 ? MODES.filter((m) => allowed.includes(m)) : MODES;
+  const index = cycle.indexOf(mode ?? "off");
+  return cycle[(index + 1) % cycle.length];
+}
+
+/** The "Modes" setting of a key (a checkbox list) as charge modes; undefined = all modes. */
+export function modesFromSettings(value: unknown): ChargeMode[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+  const modes = value.filter(isChargeMode);
+  return modes.length > 0 ? modes : undefined;
 }
 
 export type Site = {
