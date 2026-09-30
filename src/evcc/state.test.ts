@@ -182,6 +182,10 @@ describe("evcc 0.316 state shape", () => {
     expect(state.site).toMatchObject({ title: "Mein Zuhause", pvPower: 1807, gridPower: 12, homePower: 429, batteryPower: -1390, batterySoc: 87.92 });
   });
 
+  it("reads the always-charge switch", () => {
+    expect(normalizeState({ loadpoints: [{ alwaysCharge: "on" }, { alwaysCharge: "off" }, { alwaysCharge: true }, {}] }).loadpoints.map((lp) => lp.alwaysCharge)).toEqual([true, false, true, undefined]);
+  });
+
   it("accepts the smart charge mode", () => {
     const state = normalizeState(real);
     expect(state.loadpoints[0].mode).toBe("smart");

@@ -9,10 +9,10 @@ Unofficial plugin, not affiliated with the evcc project.
 * **Loadpoint** key for one loadpoint:
   * The charge mode as background color: ⬛ Off, 🟩 Smart, 🟦 Fast.
   * "Wallbox" on top (left out if you set your own title on the key), the charge power, the mode with the remaining charge time or the plug state, and the vehicle SoC as a bar with a plug / bolt glyph.
-  * Pressing the key switches to the next charge mode (Off, Smart, Fast, or the subset you tick in the key settings); holding it switches charging off.
+  * Pressing the key switches to the next charge mode (Off, Smart, Fast, or the subset you tick in the key settings); holding it toggles "always charge" (no interruptions) of the smart mode, shown as an ∞ badge.
 * **Vehicle** key: "Vehicle" on top, the vehicle assigned to a loadpoint (or "Guest") big, its SoC and plug state below. Pressing the key assigns the next vehicle configured in evcc, after the last one the guest vehicle; holding it removes the vehicle. Handy when evcc does not detect the vehicle by itself.
 * **Site** key: PV production, grid power with sign (import / export), battery SoC or home consumption, with the value's name on top. Pressing the key switches to the next value.
-* **Loadpoint Dial** (Stream Deck + / + XL): turning the dial sets the minimum charge current (6 to 16 A) or the charge limit (SoC, 5 % steps) of a loadpoint; pushing the dial or tapping the touch strip switches the charge mode. The touch strip shows mode, power, SoC, remaining time and the value the dial adjusts.
+* **Loadpoint Dial** (Stream Deck + / + XL): turning the dial sets the minimum charge current (6 to 16 A) or the charge limit (SoC, 5 % steps) of a loadpoint; pushing the dial or tapping the touch strip switches the charge mode, holding the dial toggles "always charge". The touch strip shows mode, power, SoC, remaining time and the value the dial adjusts.
 * Live updates over the evcc WebSocket, the same one the evcc web UI uses; the REST API is polled every 10 s while the WebSocket is down. Works with the flat state of older evcc versions and the `result`-wrapped state of newer ones.
 
 ## Installation
@@ -31,7 +31,7 @@ Then add a key, open its settings, enter the base URL of your evcc instance (for
 | Value | Site key | PV production, grid power, battery SoC or home consumption; pressing the key cycles through them. |
 | Turning sets | Loadpoint Dial | Minimum charge current (6 to 16 A) or charge limit (SoC, 5 % steps). |
 
-The plugin uses the evcc REST API (`GET /api/state`, `POST /api/loadpoints/{id}/mode/{mode}`, `.../mincurrent/{amps}`, `.../limitsoc/{soc}`, `POST`/`DELETE .../vehicle[/{name}]`) and the WebSocket `/ws`.
+The plugin uses the evcc REST API (`GET /api/state`, `POST /api/loadpoints/{id}/mode/{mode}`, `.../mincurrent/{amps}`, `.../limitsoc/{soc}`, `.../alwayscharge/{on|off}`, `POST`/`DELETE .../vehicle[/{name}]`) and the WebSocket `/ws`.
 
 ## Prerequisites
 

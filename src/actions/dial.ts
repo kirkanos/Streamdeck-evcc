@@ -3,6 +3,7 @@ import {
   type DialAction,
   type DialDownEvent,
   type DialRotateEvent,
+  type DialUpEvent,
   type DidReceiveSettingsEvent,
   SingletonAction,
   type TouchTapEvent,
@@ -15,6 +16,7 @@ import { evcc } from "../evcc/service";
 import { dialCanvas, dialMessage } from "../render/dial";
 import { formatPower, loadpointCaption } from "../render/values";
 import { updates } from "../throttle";
+import { LONG_PRESS_MS } from "./loadpoint";
 
 export type DialFunction = "minCurrent" | "limitSoc";
 
@@ -37,6 +39,8 @@ export class LoadpointDialAction extends SingletonAction<DialSettings> {
   readonly #settings = new Map<string, DialSettings>();
   /** Values turned to but not yet sent, per dial. */
   readonly #pending = new Map<string, Pending>();
+  /** Long-push timers of currently pushed dials. */
+  readonly #pushTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
   override onWillAppear(ev: WillAppearEvent<DialSettings>): Promise<void> {
     this.#settings.set(ev.action.id, ev.payload.settings);
@@ -46,6 +50,7 @@ export class LoadpointDialAction extends SingletonAction<DialSettings> {
   override onWillDisappear(ev: WillDisappearEvent<DialSettings>): void {
     this.#settings.delete(ev.action.id);
     this.#dropPending(ev.action.id);
+    this.#clearPush(ev.action.id);
     updates.forget(ev.action.id);
   }
 
@@ -72,7 +77,22 @@ export class LoadpointDialAction extends SingletonAction<DialSettings> {
     await this.#render(ev.action.id);
   }
 
-  override onDialDown(ev: DialDownEvent<DialSettings>): Promise<void> {
+  override onDialDown(ev: DialDownEvent<DialSettings>): void {
+    this.#clearPush(ev.action.id);
+    const timer = setTimeout(() => {
+      // Long push: toggle "always charge" while the dial is still held.
+      this.#pushTimers.delete(ev.action.id);
+      void this.#toggleAlwaysCharge(ev.action, ev.payload.settings);
+    }, LONG_PRESS_MS);
+    this.#pushTimers.set(ev.action.id, timer);
+  }
+
+  override onDialUp(ev: DialUpEvent<DialSettings>): Promise<void> {
+    if (!this.#pushTimers.has(ev.action.id)) {
+      // The long push already fired.
+      return Promise.resolve();
+    }
+    this.#clearPush(ev.action.id);
     return this.#cycleMode(ev.action, ev.payload.settings);
   }
 
@@ -103,6 +123,23 @@ export class LoadpointDialAction extends SingletonAction<DialSettings> {
     const ok = loadpoint ? await evcc.setMode(loadpoint, nextMode(loadpoint.mode, modesFromSettings(settings.modes))) : false;
     if (!ok) {
       await dial.showAlert();
+    }
+  }
+
+  async #toggleAlwaysCharge(dial: DialAction<DialSettings>, settings: DialSettings): Promise<void> {
+    const loadpoint = evcc.loadpoint(settings.loadpoint);
+    const ok = loadpoint ? await evcc.setAlwaysCharge(loadpoint, !loadpoint.alwaysCharge) : false;
+    if (!ok) {
+      await dial.showAlert();
+    }
+    await this.#render(dial.id);
+  }
+
+  #clearPush(actionId: string): void {
+    const timer = this.#pushTimers.get(actionId);
+    if (timer) {
+      clearTimeout(timer);
+      this.#pushTimers.delete(actionId);
     }
   }
 
@@ -145,6 +182,7 @@ export class LoadpointDialAction extends SingletonAction<DialSettings> {
         soc: loadpoint.vehicleSoc,
         charging: loadpoint.charging,
         connected: loadpoint.connected,
+        alwaysCharge: loadpoint.alwaysCharge,
         target: { ...target, pending: pending !== undefined },
       });
     }

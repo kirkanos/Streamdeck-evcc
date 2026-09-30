@@ -33,7 +33,7 @@
       "UUID": "com.kirkanos.evcc.loadpoint",
       "Name": "Loadpoint",
       "Icon": "images/actions/loadpoint",
-      "Tooltip": "Charge mode, charge power and vehicle SoC of one loadpoint; press to switch the charge mode, hold to switch charging off",
+      "Tooltip": "Charge mode, charge power and vehicle SoC of one loadpoint; press to switch the charge mode, hold to toggle \"always charge\"",
       "PropertyInspectorPath": "ui/loadpoint.html",
       "Controllers": [
         "Keypad"
@@ -87,7 +87,7 @@
       "UUID": "com.kirkanos.evcc.dial",
       "Name": "Loadpoint Dial",
       "Icon": "images/actions/dial",
-      "Tooltip": "Turn to set the minimum charge current or the charge limit of a loadpoint, push to switch the charge mode",
+      "Tooltip": "Turn to set the minimum charge current or the charge limit of a loadpoint, push to switch the charge mode, hold to toggle \"always charge\"",
       "PropertyInspectorPath": "ui/dial.html",
       "Controllers": [
         "Encoder"
@@ -97,7 +97,7 @@
         "Icon": "images/actions/dial",
         "TriggerDescription": {
           "Rotate": "Min current / charge limit",
-          "Push": "Next charge mode",
+          "Push": "Next charge mode, hold: always charge",
           "Touch": "Next charge mode"
         }
       },

@@ -77,6 +77,7 @@ export function normalizeLoadpoint(raw: unknown, index: number): Loadpoint {
     minCurrent: num(lp.minCurrent),
     maxCurrent: num(lp.maxCurrent),
     limitSoc: num(lp.limitSoc) ?? num(lp.targetSoc),
+    alwaysCharge: lp.alwaysCharge === undefined ? undefined : lp.alwaysCharge === "on" || lp.alwaysCharge === true,
     chargeRemainingDuration: num(lp.chargeRemainingDuration),
     chargedEnergy: num(lp.chargedEnergy),
   };

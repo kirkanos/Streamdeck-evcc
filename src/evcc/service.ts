@@ -145,6 +145,13 @@ export class EvccService extends EventEmitter<{ site: []; loadpoint: [number]; l
     });
   }
 
+  /** Switches the "always charge" (no interruptions) option of the loadpoint's smart mode. */
+  setAlwaysCharge(loadpoint: Loadpoint, on: boolean): Promise<boolean> {
+    return this.#post(loadpoint, `alwayscharge/${on ? "on" : "off"}`, () => {
+      loadpoint.alwaysCharge = on;
+    });
+  }
+
   /** Assigns a vehicle to the loadpoint, or removes it (guest vehicle) when `vehicle` is undefined. */
   setVehicle(loadpoint: Loadpoint, vehicle: Vehicle | undefined): Promise<boolean> {
     const apply = () => {

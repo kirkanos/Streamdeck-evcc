@@ -118,6 +118,13 @@ describe("images", () => {
     expect(svg).not.toContain("<lp>");
   });
 
+  it("marks always charge with a badge", () => {
+    const on = decode(loadpointKey({ name: "Wallbox", mode: "smart", value: "0", unit: "W", charging: false, connected: true, alwaysCharge: true }));
+    const off = decode(loadpointKey({ name: "Wallbox", mode: "smart", value: "0", unit: "W", charging: false, connected: true, alwaysCharge: false }));
+    expect(on).toContain(">∞<");
+    expect(off).not.toContain(">∞<");
+  });
+
   it("draws the site key with the value name on top and one big value", () => {
     const svg = decode(siteKey({ name: "PV", color: "#F59E0B", value: "4.3", unit: "kW", caption: "production" }));
     expect(svg).toContain(">PV<");

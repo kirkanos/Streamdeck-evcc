@@ -66,6 +66,8 @@ export type Loadpoint = {
   maxCurrent?: number;
   /** Charge limit in % of the vehicle SoC (0 = no limit). */
   limitSoc?: number;
+  /** "Always charge" (no interruptions) switch of the smart mode; evcc reports "on" / "off". */
+  alwaysCharge?: boolean;
   /** Estimated remaining charge time in seconds. */
   chargeRemainingDuration?: number;
   /** Energy charged in this session in Wh. */

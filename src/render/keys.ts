@@ -45,7 +45,19 @@ export type LoadpointKey = {
   soc?: number;
   charging: boolean;
   connected: boolean;
+  /** Smart mode's "always charge" switch; shown as a badge. */
+  alwaysCharge?: boolean;
 };
+
+/** Small "∞" pill marking "always charge" (no interruptions). */
+export function alwaysBadge(x: number, y: number, scale = 1): string {
+  const w = 30 * scale;
+  const h = 20 * scale;
+  return (
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h / 2}" fill="#FFFFFF" fill-opacity="0.9"/>` +
+    text("∞", { x: x + w / 2, y: y + h * 0.78, size: 18 * scale, weight: 800, fill: THEME.base })
+  );
+}
 
 // Baselines for value / caption depending on the number of name lines.
 const VALUE_Y = [78, 86, 94];
@@ -76,8 +88,9 @@ export function loadpointKey(k: LoadpointKey): string {
   const glyph = k.charging ? chargeGlyph("charging", 10, 118, 20) : k.connected ? chargeGlyph("connected", 10, 118, 20) : "";
   const barX = glyph ? 36 : 10;
   const bar = socBar(k.connected ? k.soc : undefined, barX, 123, S - barX - 10, 10, k.mode === "off" ? THEME.subtle : color);
+  const badge = k.alwaysCharge ? alwaysBadge(S - 38, 11) : "";
 
-  return toDataUrl(svg(S, S, modeBackground(k.mode) + accent + names + value + caption + glyph + bar));
+  return toDataUrl(svg(S, S, modeBackground(k.mode) + accent + names + value + caption + glyph + bar + badge));
 }
 
 export type SiteKey = {

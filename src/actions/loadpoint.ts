@@ -23,7 +23,7 @@ export type LoadpointSettings = {
   modes?: string[];
 };
 
-/** Holding a key this long sets the charge mode to off instead of cycling it. */
+/** Holding a key this long toggles "always charge" instead of cycling the mode. */
 export const LONG_PRESS_MS = 600;
 
 /** Image for keys that cannot show a loadpoint (not configured, offline, nothing selected). */
@@ -43,7 +43,7 @@ export function unavailableImage(loadpoint: string | undefined): string | undefi
   return undefined;
 }
 
-/** A key showing one loadpoint; pressing it cycles the charge mode, holding it switches charging off. */
+/** A key showing one loadpoint; pressing it cycles the charge mode, holding it toggles "always charge". */
 @action({ UUID: `${PLUGIN_ID}.loadpoint` })
 export class LoadpointAction extends SingletonAction<LoadpointSettings> {
   readonly #settings = new Map<string, LoadpointSettings>();
@@ -77,9 +77,9 @@ export class LoadpointAction extends SingletonAction<LoadpointSettings> {
   override onKeyDown(ev: KeyDownEvent<LoadpointSettings>): void {
     this.#clearPress(ev.action.id);
     const timer = setTimeout(() => {
-      // Long press: switch charging off while the key is still held.
+      // Long press: toggle "always charge" while the key is still held.
       this.#pressTimers.delete(ev.action.id);
-      void this.#setMode(ev.action, ev.payload.settings, "off");
+      void this.#toggleAlwaysCharge(ev.action, ev.payload.settings);
     }, LONG_PRESS_MS);
     this.#pressTimers.set(ev.action.id, timer);
   }
@@ -109,6 +109,12 @@ export class LoadpointAction extends SingletonAction<LoadpointSettings> {
     if (!ok) {
       await key.showAlert();
     }
+  }
+
+  async #toggleAlwaysCharge(key: KeyAction<LoadpointSettings>, settings: LoadpointSettings): Promise<void> {
+    const loadpoint = evcc.loadpoint(settings.loadpoint);
+    const ok = loadpoint ? await evcc.setAlwaysCharge(loadpoint, !loadpoint.alwaysCharge) : false;
+    await (ok ? key.showOk() : key.showAlert());
   }
 
   #clearPress(actionId: string): void {
@@ -144,6 +150,7 @@ export class LoadpointAction extends SingletonAction<LoadpointSettings> {
         soc: loadpoint.vehicleSoc,
         charging: loadpoint.charging,
         connected: loadpoint.connected,
+        alwaysCharge: loadpoint.alwaysCharge,
       }),
     );
   }
