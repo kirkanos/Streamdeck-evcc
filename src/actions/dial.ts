@@ -100,7 +100,7 @@ export class LoadpointDialAction extends SingletonAction<DialSettings> {
 
   async #cycleMode(dial: DialAction<DialSettings>, settings: DialSettings): Promise<void> {
     const loadpoint = evcc.loadpoint(settings.loadpoint);
-    const ok = loadpoint ? await evcc.setMode(loadpoint, nextMode(loadpoint.mode, modesFromSettings(settings.modes))) : false;
+    const ok = loadpoint ? await evcc.setMode(loadpoint, nextMode(loadpoint.mode, modesFromSettings(settings.modes), evcc.availableModes())) : false;
     if (!ok) {
       await dial.showAlert();
     }

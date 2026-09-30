@@ -91,7 +91,7 @@ export class LoadpointAction extends SingletonAction<LoadpointSettings> {
     }
     this.#clearPress(ev.action.id);
     const loadpoint = evcc.loadpoint(ev.payload.settings.loadpoint);
-    await this.#setMode(ev.action, ev.payload.settings, nextMode(loadpoint?.mode, modesFromSettings(ev.payload.settings.modes)));
+    await this.#setMode(ev.action, ev.payload.settings, nextMode(loadpoint?.mode, modesFromSettings(ev.payload.settings.modes), evcc.availableModes()));
   }
 
   /** Re-renders all visible keys, or only those showing loadpoint `index`. */

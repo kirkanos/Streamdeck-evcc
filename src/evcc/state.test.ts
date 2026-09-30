@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { modesFromSettings, nextMode, nextVehicle, stepLimitSoc, stepMinCurrent } from "./model";
+import { availableModes, modesFromSettings, nextMode, nextVehicle, stepLimitSoc, stepMinCurrent } from "./model";
 import { normalizeState, parseLoadpointKey, StateStore } from "./state";
 
 const flat = {
@@ -44,7 +44,7 @@ describe("normalizeState", () => {
   });
 
   it("tolerates junk", () => {
-    expect(normalizeState(null)).toEqual({ site: { title: undefined, pvPower: undefined, gridPower: undefined, homePower: undefined, batteryPower: undefined, batterySoc: undefined }, loadpoints: [], vehicles: [] });
+    expect(normalizeState(null)).toEqual({ site: { title: undefined, pvPower: undefined, gridPower: undefined, homePower: undefined, batteryPower: undefined, batterySoc: undefined }, loadpoints: [], vehicles: [], version: undefined });
     expect(normalizeState("nope").loadpoints).toEqual([]);
     expect(normalizeState({ loadpoints: "nope" }).loadpoints).toEqual([]);
     const state = normalizeState({ pvPower: "1234", batterySoc: NaN, loadpoints: [null, { mode: "turbo", charging: 1, title: "  " }] });
@@ -145,6 +145,19 @@ describe("modes and dial steps", () => {
     expect(nextMode("off", modesFromSettings(["now"]))).toBe("now");
   });
 
+  it("offers only the modes the evcc version has", () => {
+    expect(availableModes("0.316.1")).toEqual(["off", "smart", "now"]);
+    expect(availableModes("0.207.3")).toEqual(["off", "pv", "minpv", "now"]);
+    expect(availableModes(undefined)).toEqual(["off", "pv", "minpv", "smart", "now"]);
+    const modern = availableModes("0.316.1");
+    expect(nextMode("off", undefined, modern)).toBe("smart");
+    expect(nextMode("smart", undefined, modern)).toBe("now");
+    expect(nextMode("now", undefined, modern)).toBe("off");
+    // A "Modes" setting that only names modes the version lacks is ignored.
+    expect(nextMode("off", modesFromSettings(["pv", "minpv"]), modern)).toBe("smart");
+    expect(nextMode("off", modesFromSettings(["now", "pv"]), modern)).toBe("now");
+  });
+
   it("steps the min current within 6 to 16 A", () => {
     expect(stepMinCurrent(6, 1)).toBe(7);
     expect(stepMinCurrent(16, 1)).toBe(16);
@@ -209,6 +222,7 @@ describe("vehicles", () => {
       { name: "db:2", title: "Zoe", capacity: 52 },
     ]);
     expect(normalizeState({ vehicles: [] }).vehicles).toEqual([]);
+    expect(normalizeState({ version: "0.316.1" }).version).toBe("0.316.1");
   });
 
   it("cycles through the vehicles and the guest vehicle", () => {

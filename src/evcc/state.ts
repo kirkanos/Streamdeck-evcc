@@ -103,6 +103,7 @@ export function normalizeState(raw: unknown): EvccState {
     site: normalizeSite(state),
     loadpoints: loadpoints.map((lp, index) => normalizeLoadpoint(lp, index)),
     vehicles: normalizeVehicles(state.vehicles),
+    version: str(state.version),
   };
 }
 
@@ -128,7 +129,7 @@ export function parseLoadpointKey(key: string): { index: number; field: string }
  */
 export class StateStore {
   #raw: Raw = {};
-  #state: EvccState = { site: {}, loadpoints: [], vehicles: [] };
+  #state: EvccState = { site: {}, loadpoints: [], vehicles: [], version: undefined };
 
   get state(): EvccState {
     return this.#state;
