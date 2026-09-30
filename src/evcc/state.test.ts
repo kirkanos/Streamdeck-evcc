@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { nextMode, stepLimitSoc, stepMinCurrent } from "./model";
+import { nextMode, nextVehicle, stepLimitSoc, stepMinCurrent } from "./model";
 import { normalizeState, parseLoadpointKey, StateStore } from "./state";
 
 const flat = {
@@ -44,7 +44,7 @@ describe("normalizeState", () => {
   });
 
   it("tolerates junk", () => {
-    expect(normalizeState(null)).toEqual({ site: { title: undefined, pvPower: undefined, gridPower: undefined, homePower: undefined, batteryPower: undefined, batterySoc: undefined }, loadpoints: [] });
+    expect(normalizeState(null)).toEqual({ site: { title: undefined, pvPower: undefined, gridPower: undefined, homePower: undefined, batteryPower: undefined, batterySoc: undefined }, loadpoints: [], vehicles: [] });
     expect(normalizeState("nope").loadpoints).toEqual([]);
     expect(normalizeState({ loadpoints: "nope" }).loadpoints).toEqual([]);
     const state = normalizeState({ pvPower: "1234", batterySoc: NaN, loadpoints: [null, { mode: "turbo", charging: 1, title: "  " }] });
@@ -185,5 +185,25 @@ describe("evcc 0.316 state shape", () => {
     expect(store.state.site.batterySoc).toBe(90);
     expect(store.state.site.gridPower).toBe(-500);
     expect(store.state.loadpoints[0].mode).toBe("pv");
+  });
+});
+
+describe("vehicles", () => {
+  it("reads the vehicles object keyed by name", () => {
+    const state = normalizeState({ vehicles: { "db:2": { title: "Zoe", capacity: 52 }, "db:1": { title: "ID3", capacity: 58 }, "": { title: "x" } } });
+    expect(state.vehicles).toEqual([
+      { name: "db:1", title: "ID3", capacity: 58 },
+      { name: "db:2", title: "Zoe", capacity: 52 },
+    ]);
+    expect(normalizeState({ vehicles: [] }).vehicles).toEqual([]);
+  });
+
+  it("cycles through the vehicles and the guest vehicle", () => {
+    const vehicles = normalizeState({ vehicles: { "db:1": { title: "ID3" }, "db:2": { title: "Zoe" } } }).vehicles;
+    expect(nextVehicle(vehicles, undefined)?.name).toBe("db:1");
+    expect(nextVehicle(vehicles, "db:1")?.name).toBe("db:2");
+    expect(nextVehicle(vehicles, "db:2")).toBeUndefined();
+    expect(nextVehicle(vehicles, "unknown")?.name).toBe("db:1");
+    expect(nextVehicle([], undefined)).toBeUndefined();
   });
 });

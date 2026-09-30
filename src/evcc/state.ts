@@ -1,4 +1,4 @@
-import { type EvccState, isChargeMode, type Loadpoint, type Site } from "./model";
+import { type EvccState, isChargeMode, type Loadpoint, type Site, type Vehicle } from "./model";
 
 /**
  * Turns the JSON of GET /api/state into an EvccState, and applies the deltas
@@ -82,12 +82,27 @@ export function normalizeLoadpoint(raw: unknown, index: number): Loadpoint {
   };
 }
 
+/** Vehicles: evcc reports them as an object keyed by the vehicle name, e.g. { "db:1": { title, capacity } }. */
+export function normalizeVehicles(raw: unknown): Vehicle[] {
+  if (!isObject(raw)) {
+    return [];
+  }
+  return Object.entries(raw)
+    .filter(([name, v]) => name !== "" && isObject(v))
+    .map(([name, v]) => {
+      const vehicle = v as Raw;
+      return { name, title: str(vehicle.title) ?? name, capacity: num(vehicle.capacity) };
+    })
+    .sort((a, b) => a.title.localeCompare(b.title));
+}
+
 export function normalizeState(raw: unknown): EvccState {
   const state = unwrapState(raw);
   const loadpoints = Array.isArray(state.loadpoints) ? state.loadpoints : [];
   return {
     site: normalizeSite(state),
     loadpoints: loadpoints.map((lp, index) => normalizeLoadpoint(lp, index)),
+    vehicles: normalizeVehicles(state.vehicles),
   };
 }
 
@@ -113,7 +128,7 @@ export function parseLoadpointKey(key: string): { index: number; field: string }
  */
 export class StateStore {
   #raw: Raw = {};
-  #state: EvccState = { site: {}, loadpoints: [] };
+  #state: EvccState = { site: {}, loadpoints: [], vehicles: [] };
 
   get state(): EvccState {
     return this.#state;

@@ -111,6 +111,41 @@ export function siteKey(k: SiteKey): string {
   return toDataUrl(svg(S, S, bg + accent + names + value + caption));
 }
 
+export type VehicleKey = {
+  /** Loadpoint title; omitted when the user shows their own title on the key. */
+  name?: string;
+  /** Vehicle title, or undefined for the guest vehicle. */
+  vehicle?: string;
+  /** Vehicle SoC in %. */
+  soc?: number;
+  connected: boolean;
+  charging: boolean;
+};
+
+/** A key showing the vehicle assigned to a loadpoint; big title, SoC below. */
+export function vehicleKey(k: VehicleKey): string {
+  const color = k.vehicle ? THEME.ok : THEME.idle;
+  const bg = background("bg", mix(color, THEME.base, 0.72), THEME.base, S, S);
+  const accent = `<rect x="0" y="0" width="${S}" height="5" fill="${color}"/>`;
+  const names = k.name ? text(truncate(k.name, 12), { x: S / 2, y: 30, size: 19 }) : "";
+
+  const titleLines = wrapText(k.vehicle ?? "Guest", 9, 2);
+  const titleSize = titleLines.length > 1 ? 26 : 32;
+  const titleY = titleLines.length > 1 ? 74 : 86;
+  const title = titleLines.map((line, i) => text(line, { x: S / 2, y: titleY + i * (titleSize + 2), size: titleSize, weight: 800 })).join("");
+
+  const caption = k.vehicle
+    ? k.soc !== undefined && k.connected
+      ? `${Math.round(k.soc)} % · ${k.charging ? "charging" : "connected"}`
+      : k.connected
+        ? "connected"
+        : "not connected"
+    : "no vehicle assigned";
+  const captionText = text(truncate(caption, 20), { x: S / 2, y: 126, size: 14, weight: 600, opacity: 0.7 });
+
+  return toDataUrl(svg(S, S, bg + accent + names + title + captionText));
+}
+
 /** Neutral key with two lines of text, e.g. "Select / a loadpoint" or "Offline". */
 export function messageKey(title: string, subtitle: string): string {
   return toDataUrl(

@@ -2,6 +2,7 @@ import streamDeck from "@elgato/streamdeck";
 import { LoadpointDialAction } from "./actions/dial";
 import { LoadpointAction } from "./actions/loadpoint";
 import { SiteAction } from "./actions/site";
+import { VehicleAction } from "./actions/vehicle";
 import { evcc, type EvccSettings } from "./evcc/service";
 
 type JsonValue = Parameters<typeof streamDeck.ui.sendToPropertyInspector>[0];
@@ -11,16 +12,19 @@ streamDeck.logger.setLevel("info");
 const loadpoint = new LoadpointAction();
 const site = new SiteAction();
 const dial = new LoadpointDialAction();
+const vehicle = new VehicleAction();
 
 streamDeck.actions.registerAction(loadpoint);
 streamDeck.actions.registerAction(site);
 streamDeck.actions.registerAction(dial);
+streamDeck.actions.registerAction(vehicle);
 
 // Keep every visible key and dial in sync with evcc.
 
 evcc.on("loadpoint", (index) => {
   void loadpoint.refresh(index);
   void dial.refresh(index);
+  void vehicle.refresh(index);
 });
 
 evcc.on("site", () => void site.refresh());
@@ -29,6 +33,7 @@ function refreshAll(): void {
   void loadpoint.refresh();
   void site.refresh();
   void dial.refresh();
+  void vehicle.refresh();
 }
 
 evcc.on("loadpoints", () => {

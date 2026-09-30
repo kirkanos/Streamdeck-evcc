@@ -1,5 +1,5 @@
 import { EventEmitter } from "node:events";
-import type { ChargeMode, EvccState, Loadpoint, Site } from "./model";
+import type { ChargeMode, EvccState, Loadpoint, Site, Vehicle } from "./model";
 import { StateStore } from "./state";
 
 export type EvccSettings = { url?: string };
@@ -82,6 +82,10 @@ export class EvccService extends EventEmitter<{ site: []; loadpoint: [number]; l
     return this.#store.state.loadpoints;
   }
 
+  vehicles(): Vehicle[] {
+    return this.#store.state.vehicles;
+  }
+
   /** Loadpoint by 0-based index (settings store it as a string). */
   loadpoint(index: string | number | undefined): Loadpoint | undefined {
     if (index === undefined || index === "") {
@@ -141,14 +145,25 @@ export class EvccService extends EventEmitter<{ site: []; loadpoint: [number]; l
     });
   }
 
-  async #post(loadpoint: Loadpoint, path: string, applyLocally: () => void): Promise<boolean> {
+  /** Assigns a vehicle to the loadpoint, or removes it (guest vehicle) when `vehicle` is undefined. */
+  setVehicle(loadpoint: Loadpoint, vehicle: Vehicle | undefined): Promise<boolean> {
+    const apply = () => {
+      loadpoint.vehicleName = vehicle?.name;
+      loadpoint.vehicleTitle = vehicle?.title;
+    };
+    return vehicle
+      ? this.#post(loadpoint, `vehicle/${encodeURIComponent(vehicle.name)}`, apply)
+      : this.#post(loadpoint, "vehicle", apply, "DELETE");
+  }
+
+  async #post(loadpoint: Loadpoint, path: string, applyLocally: () => void, method: "POST" | "DELETE" = "POST"): Promise<boolean> {
     const url = this.#settings.url;
     if (!url || !this.isConnected) {
       return false;
     }
     try {
       const response = await fetch(`${url}/api/loadpoints/${loadpoint.id}/${path}`, {
-        method: "POST",
+        method,
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
       if (!response.ok) {

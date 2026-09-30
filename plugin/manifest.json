@@ -48,6 +48,24 @@
       ]
     },
     {
+      "UUID": "com.kirkanos.evcc.vehicle",
+      "Name": "Vehicle",
+      "Icon": "images/actions/vehicle",
+      "Tooltip": "Vehicle assigned to a loadpoint; press to assign the next vehicle, hold to remove it",
+      "PropertyInspectorPath": "ui/vehicle.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false,
+      "States": [
+        {
+          "Image": "images/key",
+          "TitleAlignment": "top",
+          "FontSize": 10
+        }
+      ]
+    },
+    {
       "UUID": "com.kirkanos.evcc.site",
       "Name": "Site",
       "Icon": "images/actions/site",

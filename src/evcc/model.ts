@@ -56,10 +56,31 @@ export type Loadpoint = {
   chargedEnergy?: number;
 };
 
+/** A vehicle configured in evcc; `name` is the key used by the REST API. */
+export type Vehicle = {
+  name: string;
+  title: string;
+  /** Battery capacity in kWh. */
+  capacity?: number;
+};
+
 export type EvccState = {
   site: Site;
   loadpoints: Loadpoint[];
+  vehicles: Vehicle[];
 };
+
+/**
+ * The vehicle after `current` when cycling through the configured vehicles and
+ * "no vehicle" (guest): guest → first → … → last → guest. `undefined` = guest.
+ */
+export function nextVehicle(vehicles: Vehicle[], current: string | undefined): Vehicle | undefined {
+  if (vehicles.length === 0) {
+    return undefined;
+  }
+  const index = current ? vehicles.findIndex((v) => v.name === current) : -1;
+  return index + 1 < vehicles.length ? vehicles[index + 1] : undefined;
+}
 
 /** Limits of the values the dial adjusts. */
 export const MIN_CURRENT_RANGE = { min: 6, max: 16, step: 1 } as const;

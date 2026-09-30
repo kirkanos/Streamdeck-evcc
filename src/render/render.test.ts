@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Loadpoint } from "../evcc/model";
 import { dialCanvas } from "./dial";
-import { loadpointKey, messageKey, siteKey } from "./keys";
+import { loadpointKey, messageKey, siteKey, vehicleKey } from "./keys";
 import { escapeXml } from "./svg";
 import { MODE_COLOR } from "./theme";
 import { formatDuration, formatPower, formatSignedPower, formatSoc, loadpointCaption, nextSiteValue, siteDisplay } from "./values";
@@ -142,5 +142,20 @@ describe("images", () => {
     expect(svg).toContain(">8<tspan");
     expect(svg).toContain(">min current<");
     expect(svg).toContain('fill="#F59E0B"');
+  });
+});
+
+describe("vehicleKey", () => {
+  it("draws the vehicle title big with the SoC caption", () => {
+    const svg = decode(vehicleKey({ name: "Carport", vehicle: "ID3", soc: 61.6, connected: true, charging: true }));
+    expect(svg).toContain(">Carport<");
+    expect(svg).toContain(">ID3<");
+    expect(svg).toContain(">62 % · charging<");
+  });
+
+  it("shows Guest when no vehicle is assigned", () => {
+    const svg = decode(vehicleKey({ vehicle: undefined, connected: false, charging: false }));
+    expect(svg).toContain(">Guest<");
+    expect(svg).toContain(">no vehicle assigned<");
   });
 });
